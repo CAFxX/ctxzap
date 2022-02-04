@@ -14,15 +14,14 @@ func WithLogger(ctx context.Context, l *zap.Logger) context.Context {
 }
 
 func Logger(ctx context.Context) *zap.Logger {
-	v := logger(ctx)
-	if v == nil {
-		v = zap.NewNop()
-	}
-	return v
+	return logger(ctx, true)
 }
 
-func logger(ctx context.Context) *zap.Logger {
+func logger(ctx context.Context, force bool) *zap.Logger {
 	v, _ := ctx.Value(ctxzap{}).(*zap.Logger)
+	if v == nil && force {
+		v = zap.NewNop()
+	}
 	return v
 }
 
@@ -39,25 +38,25 @@ func Named(ctx context.Context, name string) context.Context {
 }
 
 func Debug(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if l := logger(ctx); l != nil {
+	if l := logger(ctx, false); l != nil {
 		l.Debug(msg, fields...)
 	}
 }
 
 func Info(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if l := logger(ctx); l != nil {
+	if l := logger(ctx, false); l != nil {
 		l.Info(msg, fields...)
 	}
 }
 
 func Warn(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if l := logger(ctx); l != nil {
+	if l := logger(ctx, false); l != nil {
 		l.Warn(msg, fields...)
 	}
 }
 
 func Error(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if l := logger(ctx); l != nil {
+	if l := logger(ctx, false); l != nil {
 		l.Error(msg, fields...)
 	}
 }
@@ -75,14 +74,14 @@ func Fatal(ctx context.Context, msg string, fields ...zapcore.Field) {
 }
 
 func Check(ctx context.Context, lvl zapcore.Level, msg string) *zapcore.CheckedEntry {
-	if l := logger(ctx); l != nil {
+	if l := logger(ctx, lvl == zap.FatalLevel || lvl == zap.PanicLevel || lvl == zap.DPanicLevel); l != nil {
 		return l.Check(lvl, msg)
 	}
 	return nil
 }
 
 func Sync(ctx context.Context) error {
-	if l := logger(ctx); l != nil {
+	if l := logger(ctx, false); l != nil {
 		return l.Sync()
 	}
 	return nil
