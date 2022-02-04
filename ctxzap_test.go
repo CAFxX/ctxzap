@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func TestCtxzap(t *testing.T) {
@@ -16,4 +17,11 @@ func TestCtxzapWith(t *testing.T) {
 	ctx := context.Background()
 	ctx = With(ctx, zap.String("foo", "bar"))
 	Info(ctx, "info")
+}
+
+func TestCtxzapCheck(t *testing.T) {
+	ctx := context.Background()
+	if ce := Check(ctx, zapcore.ErrorLevel, "msg"); ce != nil {
+		ce.Write()
+	}
 }
