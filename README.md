@@ -1,6 +1,6 @@
 # ctxzap
 
-Attach your zap.Logger to context.Context.
+Attach your zap.Logger to context.Context. [![Package documentation](https://pkg.go.dev/badge/github.com/CAFxX/ctxzap)](https://pkg.go.dev/github.com/CAFxX/ctxzap)
 
 ## Usage
 
