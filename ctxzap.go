@@ -74,7 +74,7 @@ func Fatal(ctx context.Context, msg string, fields ...zapcore.Field) {
 }
 
 func Check(ctx context.Context, lvl zapcore.Level, msg string) *zapcore.CheckedEntry {
-	if l := logger(ctx, lvl == zap.FatalLevel || lvl == zap.PanicLevel || lvl == zap.DPanicLevel); l != nil {
+	if l := logger(ctx, lvl >= zap.PanicLevel); l != nil {
 		return l.Check(lvl, msg)
 	}
 	return nil
