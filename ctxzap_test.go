@@ -25,3 +25,13 @@ func TestCtxzapCheck(t *testing.T) {
 		ce.Write()
 	}
 }
+
+func TestCtxzapPanic(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("no panic")
+		}
+	}()
+	ctx := context.Background()
+	Panic(ctx, "ohnoes")
+}

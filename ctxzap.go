@@ -10,17 +10,17 @@ import (
 type ctxzap struct{}
 
 func WithLogger(ctx context.Context, l *zap.Logger) context.Context {
-	return context.WithValue(ctx, ctxzap{}, l)
+	return context.WithValue(ctx, ctxzap{}, l.WithOptions(zap.AddCallerSkip(1)))
 }
 
 func Logger(ctx context.Context) *zap.Logger {
-	return logger(ctx, true)
+	return logger(ctx, true).WithOptions(zap.AddCallerSkip(-1))
 }
 
 func logger(ctx context.Context, force bool) *zap.Logger {
 	v, _ := ctx.Value(ctxzap{}).(*zap.Logger)
 	if v == nil && force {
-		v = zap.NewNop()
+		v = zap.NewNop().WithOptions(zap.AddCallerSkip(1))
 	}
 	return v
 }
