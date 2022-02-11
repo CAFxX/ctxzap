@@ -8,25 +8,40 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func TestCtxzap(t *testing.T) {
+func ExampleInfo() {
 	ctx := context.Background()
-	Info(ctx, "info")
+	Info(ctx, "not logged")
+
+	l := zap.NewExample()
+	ctx = WithLogger(ctx, l)
+	Info(ctx, "logged")
+
+	// Output:
+	// {"level":"info","msg":"logged"}
 }
 
-func TestCtxzapWith(t *testing.T) {
+func ExampleWith() {
 	ctx := context.Background()
 	ctx = With(ctx, zap.String("foo", "bar"))
-	Info(ctx, "info")
+	Info(ctx, "not logged")
+
+	ctx = WithOptions(ctx, zap.WrapCore(func(zapcore.Core) zapcore.Core {
+		return zap.NewExample().Core()
+	}))
+	Info(ctx, "logged")
+
+	// Output:
+	// {"level":"info","msg":"logged"}
 }
 
-func TestCtxzapCheck(t *testing.T) {
+func TestCheck(t *testing.T) {
 	ctx := context.Background()
 	if ce := Check(ctx, zapcore.ErrorLevel, "msg"); ce != nil {
-		ce.Write()
+		t.Fatal("Check returned non-nil")
 	}
 }
 
-func TestCtxzapPanic(t *testing.T) {
+func TestPanic(t *testing.T) {
 	defer func() {
 		if recover() == nil {
 			t.Fatal("no panic")

@@ -26,7 +26,10 @@ func logger(ctx context.Context, force bool) *zap.Logger {
 }
 
 func With(ctx context.Context, fields ...zapcore.Field) context.Context {
-	return WithLogger(ctx, Logger(ctx).With(fields...))
+	if l := logger(ctx, false); l != nil {
+		return WithLogger(ctx, l.With(fields...))
+	}
+	return ctx
 }
 
 func WithOptions(ctx context.Context, options ...zap.Option) context.Context {
